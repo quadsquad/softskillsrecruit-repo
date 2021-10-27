@@ -93,6 +93,7 @@
 				
 			</plugin>
 		</plugins>
+		<finalName>softskillsrecruitement</finalName>
 	</build>
 
 </project>

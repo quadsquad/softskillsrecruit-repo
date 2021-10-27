@@ -72,24 +72,7 @@ public class SoftSkillsController {
 
 		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
 	}
-	
-/*	@GetMapping("/emploi/{id_emp}")
-	public ResponseEntity<?> getEmpById(@PathVariable String id_emp) {
-		if (empRepo.findById(id_emp).isPresent()) {
-			return new ResponseEntity<Emploi>(empRepo.findById(id_emp).get(), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>("Error finding job", HttpStatus.NOT_FOUND);
-		}
-	}*/
-	/*@GetMapping("/get-user/{id_user}")
-	public ResponseEntity<?> getUser(@PathVariable String id_user) {
-		if (userRepository.findById(id_user).isPresent()) {
-			UserModel u = userRepository.findById(id_user).get();
-			return new ResponseEntity<UserModel>(u, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>("Error finding user", HttpStatus.NOT_FOUND);
-		}
-	}*/
+
 	@GetMapping("/findall")
 	public ResponseEntity<?> getAllSoftSkills(){
 		List<SoftSkills> softallskills =	softrepo.findAll();

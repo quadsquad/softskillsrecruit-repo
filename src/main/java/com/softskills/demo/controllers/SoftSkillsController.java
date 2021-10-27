@@ -1,10 +1,14 @@
 package com.softskills.demo.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,10 +20,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.softskills.demo.entities.SoftSkills;
 import com.softskills.demo.repositories.SoftSkillsRepository;
 import com.softskills.demo.services.SoftSkillsService;
+
 
 
 
@@ -34,11 +42,59 @@ public class SoftSkillsController {
 	@Autowired
 	private SoftSkillsService softservice;
 	
+	@Autowired
+	private RestTemplate rest;
+	
+	 @Autowired
+	    @LoadBalanced
+	    private RestTemplate loadBalanced;
+	
+	 
+	@GetMapping("/findallusers")
+	public List<Object> getConnected(){
+		Object[] objects =rest.getForObject("http://authrecruit/findallusers", Object[].class);
+		return Arrays.asList(objects);
+	}
+	
+	public static String getBearerTokenHeader() {
+	    return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
+	  }
+	
+	@GetMapping(value = "/getuserconnect")
+	public ResponseEntity<?> getConnectedUser() {
+		
+		//Object response = rest.getForObject("http://authrecruit/getuserconnected", Object.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", getBearerTokenHeader()); 
+        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        ResponseEntity<String> response = rest.exchange("http://authrecruit/content", HttpMethod.GET, entity, String.class);
+
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+	}
+	
+/*	@GetMapping("/emploi/{id_emp}")
+	public ResponseEntity<?> getEmpById(@PathVariable String id_emp) {
+		if (empRepo.findById(id_emp).isPresent()) {
+			return new ResponseEntity<Emploi>(empRepo.findById(id_emp).get(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("Error finding job", HttpStatus.NOT_FOUND);
+		}
+	}*/
+	/*@GetMapping("/get-user/{id_user}")
+	public ResponseEntity<?> getUser(@PathVariable String id_user) {
+		if (userRepository.findById(id_user).isPresent()) {
+			UserModel u = userRepository.findById(id_user).get();
+			return new ResponseEntity<UserModel>(u, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("Error finding user", HttpStatus.NOT_FOUND);
+		}
+	}*/
 	@GetMapping("/findall")
 	public ResponseEntity<?> getAllSoftSkills(){
 		List<SoftSkills> softallskills =	softrepo.findAll();
 		if(!softallskills.isEmpty()){
-			return new ResponseEntity(softallskills, HttpStatus.OK);
+			return new ResponseEntity<>(softallskills, HttpStatus.OK);
 			
 			}
 		else 
@@ -50,6 +106,12 @@ public class SoftSkillsController {
 	@PostMapping("/create")
 	public ResponseEntity<?> createSoft(@RequestBody SoftSkills soft){
 		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Authorization", getBearerTokenHeader()); 
+	        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+	        ResponseEntity<String> response = rest.exchange("http://authrecruit/content", HttpMethod.GET, entity, String.class);
+
+			soft.setUserauth(response.getBody());
 			softservice.createSoftSkills(soft);
 			return new ResponseEntity<SoftSkills>(soft, HttpStatus.OK);
 		} catch (ConstraintViolationException e) {
@@ -66,6 +128,7 @@ public class SoftSkillsController {
 		if (softskillsOptional.isPresent())
 		{
 			SoftSkills softToSave = softskillsOptional.get();
+		
 			softToSave.setSoft_name(soft.getSoft_name() != null? soft.getSoft_name(): softToSave.getSoft_name());
 			softToSave.setSoft_note(soft.getSoft_note() != 0 ? soft.getSoft_note(): softToSave.getSoft_note());
 			softToSave.setSoft_niveau(soft.getSoft_niveau() != null? soft.getSoft_niveau(): softToSave.getSoft_niveau());

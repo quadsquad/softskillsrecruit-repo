@@ -1,7 +1,6 @@
 package com.softskills.demo.services;
 
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.security.core.Authentication;
 
 import com.softskills.demo.entities.SoftSkills;
 

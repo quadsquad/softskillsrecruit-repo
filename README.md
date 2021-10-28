@@ -1,6 +1,9 @@
 # softskillsrecruit-repo
 Soft Skills Repository
 
+![logo](https://user-images.githubusercontent.com/92694381/139270280-fd26f282-b2d0-445e-9163-180ede3073ba.png)
+
+
 Gestion des SoftSkills
 RECRUTEMENT PROJECT
 

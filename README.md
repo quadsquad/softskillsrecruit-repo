@@ -12,7 +12,7 @@ Soft skills recruitement permet de faire la gestion des soft skills dans l'appli
 
 to install :
 
-1st step :git clone https://github.com/quadsquad/jobrecruit-repo.git
+1st step :git clone https://github.com/quadsquad/softskillsrecruit-repo.git
 
 2nd step : npm install
 
